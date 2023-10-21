@@ -109,7 +109,7 @@
                 configurePhase = "mkdir -p ${outDir}";
                 buildPhase = ''
                   find ${iosevka-omid}/share/fonts/truetype/ -type f -print0 \
-                    | xargs -0 -I@@ nerd-font-patcher @@ --complete --careful --outputdir ${outDir}
+                    | xargs -P$NIX_BUILD_CORES -0 -I@@ nerd-font-patcher @@ --complete --careful --outputdir ${outDir}
                 '';
                 dontInstall = true;
               };
@@ -126,7 +126,7 @@
                 configurePhase = "mkdir -p ${outDir}";
                 buildPhase = ''
                   find ${iosevka-term-omid}/share/fonts/truetype/ -type f -print0 \
-                    | xargs -0 -I@@ nerd-font-patcher @@ --complete --careful --outputdir ${outDir}
+                    | xargs -P$NIX_BUILD_CORES -0 -I@@ nerd-font-patcher @@ --complete --careful --outputdir ${outDir}
                 '';
                 dontInstall = true;
               };
