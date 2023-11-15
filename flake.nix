@@ -13,13 +13,31 @@
           let
             pkgs = nixpkgs.legacyPackages.${system};
 
-            iosevka-omid = pkgs.iosevka.override {
+            iosevka-latest = pkgs.iosevka.overrideAttrs (old: rec {
+              version = "27.3.5";
+              src = pkgs.fetchFromGitHub {
+                owner = "be5invis";
+                repo = "iosevka";
+                rev = "v${version}";
+                hash = "sha256-dqXr/MVOuEmAMueaRWsnzY9MabhnyBRtLR9IDVLN79I=";
+              };
+              npmDepsHash = "sha256-bux8aFBP1Pi5pAQY1jkNTqD2Ny2j+QQs+QRaXWJj6xg=";
+              npmDeps = pkgs.fetchNpmDeps {
+                inherit src;
+                name = "${old.pname}-${version}-npm-deps";
+                hash = npmDepsHash;
+              };
+            });
+
+            iosevka-omid = iosevka-latest.override {
               set = "omid";
               privateBuildPlan = {
                 family = "Iosevka Omid";
+                snapshotFamily = "Iosevka";
                 spacing = "normal";
                 serifs = "sans";
                 export-glyph-names = true;
+                buildTextureFeature = true;
                 ligations = {
                   inherits = "dlig";
                   enables = [ "tildeeq" ]; # NOTE: ~​= as not-equals
@@ -37,7 +55,7 @@
               };
             };
 
-            iosevka-term-omid = pkgs.iosevka.override {
+            iosevka-term-omid = iosevka-latest.override {
               set = "term-omid";
               privateBuildPlan = {
                 family = "Iosevka Term Omid";
@@ -45,6 +63,7 @@
                 spacing = "term";
                 snapshotFeature.NWID = 1;
                 export-glyph-names = true;
+                buildTextureFeature = true;
                 variants = {
                   inherits = "ss05";
                   design = {
@@ -57,11 +76,11 @@
               };
             };
 
-            iosevka-etoile-omid = pkgs.iosevka.override {
+            iosevka-etoile-omid = iosevka-latest.override {
               set = "etoile-omid";
               privateBuildPlan = {
                 family = "Iosevka Etoile Omid";
-                snapshotFamily = "Iosevka Etoile Omid";
+                snapshotFamily = "Iosevka Etoile";
                 spacing = "quasi-proportional";
                 serifs = "slab";
                 export-glyph-names = true;
@@ -132,6 +151,7 @@
               };
 
             packages = {
+              iosevka-latest = iosevka-latest;
               iosevka-omid = iosevka-omid;
               iosevka-omid-nerd-font = iosevka-omid-nerd-font;
               iosevka-term-omid = iosevka-term-omid;
@@ -149,6 +169,7 @@
       packages = allSystems.packages;
       defaultPackage = allSystems.defaultPackage;
       overlay = final: prev: {
+        iosevka = allSystems.packages.${final.system}.iosevka-latest;
         iosevka-omid = allSystems.packages.${final.system}.iosevka-omid;
         iosevka-term-omid = allSystems.packages.${final.system}.iosevka-term-omid;
         iosevka-omid-nerd-font = allSystems.packages.${final.system}.iosevka-omid-nerd-font;
