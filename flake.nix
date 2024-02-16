@@ -155,7 +155,7 @@
                 pname = "iosevka-etoile-omid-nerd-font";
                 version = iosevka-etoile-omid.version;
 
-                src = builtins.path { path = ./.; name = "iosevka-omid"; };
+                src = builtins.path { path = ./.; name = "iosevka-etoile-omid"; };
 
                 buildInputs = [ pkgs.nerd-font-patcher pkgs.findutils ];
 
