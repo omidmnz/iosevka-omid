@@ -150,6 +150,23 @@
                 dontInstall = true;
               };
 
+            iosevka-etoile-omid-nerd-font = let outDir = "$out/share/fonts/truetype/"; in
+              pkgs.stdenv.mkDerivation {
+                pname = "iosevka-etoile-omid-nerd-font";
+                version = iosevka-etoile-omid.version;
+
+                src = builtins.path { path = ./.; name = "iosevka-omid"; };
+
+                buildInputs = [ pkgs.nerd-font-patcher pkgs.findutils ];
+
+                configurePhase = "mkdir -p ${outDir}";
+                buildPhase = ''
+                  find ${iosevka-etoile-omid}/share/fonts/truetype/ -type f -print0 \
+                    | xargs -P$NIX_BUILD_CORES -0 -I@@ nerd-font-patcher @@ --complete --careful --outputdir ${outDir}
+                '';
+                dontInstall = true;
+              };
+
             packages = {
               iosevka-latest = iosevka-latest;
               iosevka-omid = iosevka-omid;
@@ -157,6 +174,7 @@
               iosevka-term-omid = iosevka-term-omid;
               iosevka-term-omid-nerd-font = iosevka-term-omid-nerd-font;
               iosevka-etoile-omid = iosevka-etoile-omid;
+              iosevka-etoile-omid-nerd-font = iosevka-etoile-omid-nerd-font;
             };
           in
           {
@@ -175,6 +193,7 @@
         iosevka-omid-nerd-font = allSystems.packages.${final.system}.iosevka-omid-nerd-font;
         iosevka-term-omid-nerd-font = allSystems.packages.${final.system}.iosevka-term-omid-nerd-font;
         iosevka-etoile-omid = allSystems.packages.${final.system}.iosevka-etoile-omid;
+        iosevka-etoile-omid-nerd-font = allSystems.packages.${final.system}.iosevka-etoile-omid-nerd-font;
       };
     };
 }
