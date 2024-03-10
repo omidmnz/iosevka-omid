@@ -14,14 +14,20 @@
             pkgs = nixpkgs.legacyPackages.${system};
 
             iosevka-latest = pkgs.iosevka.overrideAttrs (old: rec {
-              version = "27.3.5";
+              version = "29.0.2";
               src = pkgs.fetchFromGitHub {
                 owner = "be5invis";
                 repo = "iosevka";
                 rev = "v${version}";
-                hash = "sha256-dqXr/MVOuEmAMueaRWsnzY9MabhnyBRtLR9IDVLN79I=";
+                hash = "sha256-lCxWybPMeTDRlGCBtZ5R8KrTZl6jyQtW+F2PQoaN10E";
               };
-              npmDepsHash = "sha256-bux8aFBP1Pi5pAQY1jkNTqD2Ny2j+QQs+QRaXWJj6xg=";
+              buildPhase = ''
+                export HOME=$TMPDIR
+                runHook preBuild
+                npm run build --no-update-notifier --targets ttf::$pname -- --jCmd=$NIX_BUILD_CORES --verbose=9
+                runHook postBuild
+              '';
+              npmDepsHash = "sha256-wdELLh7EfvDm5trySAnx1HkqA5wVYtSEofLaZi1GZSY";
               npmDeps = pkgs.fetchNpmDeps {
                 inherit src;
                 name = "${old.pname}-${version}-npm-deps";
@@ -30,13 +36,13 @@
             });
 
             iosevka-omid = iosevka-latest.override {
-              set = "omid";
+              set = "Omid";
               privateBuildPlan = {
                 family = "Iosevka Omid";
                 snapshotFamily = "Iosevka";
                 spacing = "normal";
                 serifs = "sans";
-                export-glyph-names = true;
+                exportGlyphNames = true;
                 buildTextureFeature = true;
                 ligations = {
                   inherits = "dlig";
@@ -56,13 +62,13 @@
             };
 
             iosevka-term-omid = iosevka-latest.override {
-              set = "term-omid";
+              set = "TermOmid";
               privateBuildPlan = {
                 family = "Iosevka Term Omid";
                 snapshotFamily = "Iosevka";
                 spacing = "term";
                 snapshotFeature.NWID = 1;
-                export-glyph-names = true;
+                exportGlyphNames = true;
                 buildTextureFeature = true;
                 variants = {
                   inherits = "ss05";
@@ -77,13 +83,13 @@
             };
 
             iosevka-etoile-omid = iosevka-latest.override {
-              set = "etoile-omid";
+              set = "EtoileOmid";
               privateBuildPlan = {
                 family = "Iosevka Etoile Omid";
                 snapshotFamily = "Iosevka Etoile";
                 spacing = "quasi-proportional";
                 serifs = "slab";
-                export-glyph-names = true;
+                exportGlyphNames = true;
                 snapshotFeature.NWID = 0;
                 widths.normal = {
                   shape = 600;
