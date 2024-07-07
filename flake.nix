@@ -13,29 +13,7 @@
           let
             pkgs = nixpkgs.legacyPackages.${system};
 
-            iosevka-latest = pkgs.iosevka.overrideAttrs (old: rec {
-              version = "29.0.2";
-              src = pkgs.fetchFromGitHub {
-                owner = "be5invis";
-                repo = "iosevka";
-                rev = "v${version}";
-                hash = "sha256-lCxWybPMeTDRlGCBtZ5R8KrTZl6jyQtW+F2PQoaN10E";
-              };
-              buildPhase = ''
-                export HOME=$TMPDIR
-                runHook preBuild
-                npm run build --no-update-notifier --targets ttf::$pname -- --jCmd=$NIX_BUILD_CORES --verbose=9
-                runHook postBuild
-              '';
-              npmDepsHash = "sha256-wdELLh7EfvDm5trySAnx1HkqA5wVYtSEofLaZi1GZSY";
-              npmDeps = pkgs.fetchNpmDeps {
-                inherit src;
-                name = "${old.pname}-${version}-npm-deps";
-                hash = npmDepsHash;
-              };
-            });
-
-            iosevka-omid = iosevka-latest.override {
+            iosevka-omid = pkgs.iosevka.override {
               set = "Omid";
               privateBuildPlan = {
                 family = "Iosevka Omid";
@@ -61,7 +39,7 @@
               };
             };
 
-            iosevka-term-omid = iosevka-latest.override {
+            iosevka-term-omid = pkgs.iosevka.override {
               set = "TermOmid";
               privateBuildPlan = {
                 family = "Iosevka Term Omid";
@@ -82,7 +60,7 @@
               };
             };
 
-            iosevka-etoile-omid = iosevka-latest.override {
+            iosevka-etoile-omid = pkgs.iosevka.override {
               set = "EtoileOmid";
               privateBuildPlan = {
                 family = "Iosevka Etoile Omid";
@@ -174,7 +152,7 @@
               };
 
             packages = {
-              iosevka-latest = iosevka-latest;
+              pkgs.iosevka = pkgs.iosevka;
               iosevka-omid = iosevka-omid;
               iosevka-omid-nerd-font = iosevka-omid-nerd-font;
               iosevka-term-omid = iosevka-term-omid;
@@ -193,7 +171,6 @@
       packages = allSystems.packages;
       defaultPackage = allSystems.defaultPackage;
       overlay = final: prev: {
-        iosevka = allSystems.packages.${final.system}.iosevka-latest;
         iosevka-omid = allSystems.packages.${final.system}.iosevka-omid;
         iosevka-term-omid = allSystems.packages.${final.system}.iosevka-term-omid;
         iosevka-omid-nerd-font = allSystems.packages.${final.system}.iosevka-omid-nerd-font;
